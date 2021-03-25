@@ -378,5 +378,33 @@ namespace Neo.Emulation.API
             //returns Contract
             throw new NotImplementedException();
         }
+
+        public void AddMockBlocks(int countMockBlocks)
+        {
+            for (int i = 0; i < countMockBlocks; i++)
+            {
+                var keypair = KeyPair.FromWIF(InitialPrivateWIF);
+
+                int amount = 0;
+
+                var balances = new Dictionary<string, decimal>();
+                balances["NEO"] = amount;
+                balances["GAS"] = amount;
+
+                var block = GenerateBlock();
+
+                var hash = new UInt160(CryptoUtils.AddressToScriptHash(keypair.address));
+
+                var tx = new Transaction(block);
+
+                foreach (var entry in balances)
+                {
+                    BigInteger total = (BigInteger)amount * Asset.Decimals;
+                    tx.outputs.Add(new TransactionOutput(Asset.GetAssetId(entry.Key), total, hash));
+                }
+
+                ConfirmBlock(block);
+            }
+        }
     }
 }
