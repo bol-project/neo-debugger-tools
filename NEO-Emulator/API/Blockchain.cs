@@ -337,7 +337,14 @@ namespace Neo.Emulation.API
             //OR
             //byte[] hash
             //returns Block 
-            throw new NotImplementedException();
+            Block block = null;
+            var blockchain = engine.GetBlockchain();
+            var obj = engine.EvaluationStack.Pop();
+            var temp = obj.GetBigInteger();
+            var height = (uint)temp;
+            block = blockchain._blocks[height];
+            engine.EvaluationStack.Push(new VM.Types.InteropInterface(block));
+            return true;
         }
 
         [Syscall("Neo.Blockchain.GetTransaction", 0.1)]
