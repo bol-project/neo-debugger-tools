@@ -101,35 +101,9 @@ namespace Neo.Emulation.API
         [Syscall("Neo.Runtime.Notify")]
         public static bool Notify(ExecutionEngine engine)
         {
-            //params object[] state
             var something = engine.EvaluationStack.Pop();
-
-            if (something is ICollection)
-            {
-                var sb = new StringBuilder();
-
-                var items = (ICollection)something;
-
-                int index = 0;
-
-                foreach (StackItem item in items)
-                {
-                    if (index > 0)
-                    {
-                        sb.Append(" / ");
-                    }
-
-                    sb.Append(FormattingUtils.StackItemAsString(item, true));
-                    index++;
-                }
-
-                DoLog(sb.ToString());
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            var result = FormattingUtils.StackItemAsString(something, true);
+            return true;
         }
 
         [Syscall("Neo.Runtime.Log")]
