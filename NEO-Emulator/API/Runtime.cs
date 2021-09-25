@@ -1,10 +1,11 @@
-﻿using Neo.VM;
+using Neo.VM;
 using Neo.Emulation.Utils;
 using System;
 using System.Diagnostics;
 using System.Text;
 using Neo.Lux.Cryptography;
 using System.Collections;
+using System.Collections.Concurrent;
 
 namespace Neo.Emulation.API
 {
@@ -12,7 +13,7 @@ namespace Neo.Emulation.API
     {
         public static KeyPair invokerKeys;
 
-        public static Action<string> OnLogMessage;
+        public static ConcurrentDictionary<Emulator,Action<string>> OnLogMessage = new ConcurrentDictionary<Emulator, Action<string>>();
 
         [Syscall("Neo.Runtime.GetTrigger")]
         public static bool GetTrigger(ExecutionEngine engine)
@@ -92,7 +93,7 @@ namespace Neo.Emulation.API
                 matchType += " / Forced";
             }
 
-            DoLog($"Checking Witness [{matchType}]: {FormattingUtils.OutputData(hashOrPubkey, false)} => {result}");
+            DoLog($"Checking Witness [{matchType}]: {FormattingUtils.OutputData(hashOrPubkey, false)} => {result}", engine.GetEmulator());
 
             engine.EvaluationStack.Push(new VM.Types.Boolean(result));
             return true;
@@ -103,6 +104,7 @@ namespace Neo.Emulation.API
         {
             var something = engine.EvaluationStack.Pop();
             var result = FormattingUtils.StackItemAsString(something, true);
+            DoLog(result, engine.GetEmulator());
             return true;
         }
 
@@ -110,18 +112,16 @@ namespace Neo.Emulation.API
         public static bool Log(ExecutionEngine engine)
         {
             var msg = engine.EvaluationStack.Pop();
-            DoLog(FormattingUtils.StackItemAsString(msg));
+            DoLog(FormattingUtils.StackItemAsString(msg), engine.GetEmulator());
             return true;
         }
 
-        private static void DoLog(string msg)
+        private static void DoLog(string msg, Emulator emulator)
         {
             Debug.WriteLine(msg);
 
-            if (OnLogMessage != null)
-            {
-                OnLogMessage(msg);
-            }
+            if (OnLogMessage.TryGetValue(emulator, out var action))
+                action(msg);            
         }
     }
 }
