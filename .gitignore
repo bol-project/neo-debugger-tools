@@ -240,3 +240,7 @@ ModelManifest.xml
 /NEO-IDE/Output/Site/netcoreapp2.0
 NEO-Debugger-Electron/Output/compilers/
 NEO-Debugger-Electron/Output/electron/
+
+.DS_Store
+
+.idea/
