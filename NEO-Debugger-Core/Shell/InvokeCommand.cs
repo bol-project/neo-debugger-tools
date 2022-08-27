@@ -70,7 +70,7 @@ namespace Neo.Debugger.Shell
 
             Shell.Debugger.Emulator.Reset(loaderScript, Shell.Debugger.ABI, methodName);
 
-            Runtime.OnLogMessage = (x => output(ShellMessageType.Default, x));
+            Runtime.OnLogMessage[Shell.Debugger.Emulator] = (x => output(ShellMessageType.Default, x));
 
             Shell.Debugger.Run();
             ShellRunner.UpdateState(Shell, output);

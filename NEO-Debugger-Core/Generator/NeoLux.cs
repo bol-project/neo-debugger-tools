@@ -1,22 +1,22 @@
-﻿using Neo.Emulation;
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
+using Neo.Emulation;
 
 namespace Neo.Debugger.Core.Generator
 {
     public static class NeoLux
     {
-        public  static string ConvertType(Emulator.Type type)
+        public  static string ConvertType(Neo.Emulation.Emulator.Type type)
         {
             switch (type)
             {
-                case Emulator.Type.Boolean: return "bool";
-                case Emulator.Type.String: return "string";
+                case Neo.Emulation.Emulator.Type.Boolean: return "bool";
+                case Neo.Emulation.Emulator.Type.String: return "string";
 
-                case Emulator.Type.Integer: return "BigInteger";
-                case Emulator.Type.ByteArray: return "byte[]";
-                case Emulator.Type.Array: return "object[]";
+                case Neo.Emulation.Emulator.Type.Integer: return "BigInteger";
+                case Neo.Emulation.Emulator.Type.ByteArray: return "byte[]";
+                case Neo.Emulation.Emulator.Type.Array: return "object[]";
 
                 default: throw new ArgumentException("Invalid type: " + type);
             }
