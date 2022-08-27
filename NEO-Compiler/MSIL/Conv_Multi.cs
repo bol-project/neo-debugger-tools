@@ -394,8 +394,7 @@ namespace Neo.Compiler.MSIL
 
 				// OpCodeAttribute/SyscallAttribute together with different attributes, cannot mix!
 				throw new Exception("neomachine Cannot mix OpCode/Syscall/Script attributes with others!");
-				return false;
-			}
+            }
 		}
 
 		/*
@@ -1269,12 +1268,7 @@ namespace Neo.Compiler.MSIL
 					return skip;
 				}
 			}
-
-
-
-			return 0;
-
-		}
+        }
 
 		
         private int _ConvertInitObj(OpCode src, NeoMethod to)

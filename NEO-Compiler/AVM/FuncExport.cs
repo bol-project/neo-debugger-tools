@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Neo.Lux.Cryptography;
 
 namespace vmtool
 {
@@ -69,7 +70,7 @@ namespace vmtool
         {
             var sha256 = System.Security.Cryptography.SHA256.Create();
             byte[] hash256 = sha256.ComputeHash(script);
-            var ripemd160 = new RIPEMD160Managed();
+            var ripemd160 = new RIPEMD160();
             var hash = ripemd160.ComputeHash(hash256);
 
             var outjson = new MyJson.JsonNode_Object();

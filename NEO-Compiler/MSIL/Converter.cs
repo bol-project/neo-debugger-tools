@@ -164,7 +164,7 @@ namespace Neo.Compiler.MSIL
                                 }
                             }
                         }
-                        catch (Exception err)
+                        catch (Exception)
                         {
 
                         }
@@ -174,7 +174,7 @@ namespace Neo.Compiler.MSIL
                             nm.paramtypes.Add(new NeoParam(src.name, src.type));
                         }
 
-						byte[] outcall; string name; Lux.VM.OpCode[] opcodes; string[] opdata;
+						byte[] outcall; Lux.VM.OpCode[] opcodes; string[] opdata;
 						if (IsAppCall(m.Value.method, out outcall))
 							continue;
 						if (IsNonCall(m.Value.method))
@@ -573,7 +573,6 @@ namespace Neo.Compiler.MSIL
                         //    code.srcaddrswitch[i] = src.tokenAddr_Switch[i];
                         //}
                     }
-                    break;
                 case CodeEx.Brtrue:
                 case CodeEx.Brtrue_S:
                     {

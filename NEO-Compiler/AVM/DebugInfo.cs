@@ -1,7 +1,7 @@
-﻿using Neo.Debugger.Dissambler;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using Neo.Lux.Debugger;
 
 namespace Neo.Compiler.AVM
 {
