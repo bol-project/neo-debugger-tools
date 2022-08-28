@@ -74,9 +74,13 @@ namespace Neo.Emulation.API
             ConfirmBlock(block);
         }
 
-        public Block GenerateBlock()
+        public Block GenerateBlock(DateTime datetime = default)
         {
-            var block = new Block(currentHeight + 1, DateTime.Now.ToTimestamp(), RandomUtils.RandomUInt(), RandomUtils.RandomHash());
+            var block = new Block(
+                currentHeight + 1, 
+                datetime == default? DateTime.Now.ToTimestamp() : datetime.ToTimestamp(), 
+                RandomUtils.RandomUInt(), 
+                RandomUtils.RandomHash());
             return block;
         }
 
@@ -388,6 +392,7 @@ namespace Neo.Emulation.API
 
         public void AddMockBlocks(int countMockBlocks)
         {
+            var now = DateTime.Now;
             for (int i = 0; i < countMockBlocks; i++)
             {
                 var keypair = KeyPair.FromWIF(InitialPrivateWIF);
@@ -398,7 +403,7 @@ namespace Neo.Emulation.API
                 balances["NEO"] = amount;
                 balances["GAS"] = amount;
 
-                var block = GenerateBlock();
+                var block = GenerateBlock(now.AddDays(i));
 
                 var hash = new UInt160(CryptoUtils.AddressToScriptHash(keypair.address));
 
