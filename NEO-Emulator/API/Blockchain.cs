@@ -33,7 +33,7 @@ namespace Neo.Emulation.API
                 {
                     return null;
                 }
-                return _blocks[currentHeight];
+                return _blocks[currentHeight - 1];
             }
         }
 
@@ -77,7 +77,7 @@ namespace Neo.Emulation.API
         public Block GenerateBlock(DateTime datetime = default)
         {
             var block = new Block(
-                currentHeight + 1, 
+                currentHeight, 
                 datetime == default? DateTime.Now.ToTimestamp() : datetime.ToTimestamp(), 
                 RandomUtils.RandomUInt(), 
                 RandomUtils.RandomHash());
@@ -88,7 +88,7 @@ namespace Neo.Emulation.API
         // if thats true, then it updates balances from all accounts in the included transactions
         public bool ConfirmBlock(Block block)
         {
-            if (block.height != currentHeight + 1)
+            if (block.height != currentHeight)
             {
                 return false;
             }
