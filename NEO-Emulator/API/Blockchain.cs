@@ -29,7 +29,7 @@ namespace Neo.Emulation.API
         {
             get
             {
-                if (_blocks.Count == 0)
+                if (currentHeight == 0)
                 {
                     return null;
                 }
@@ -272,7 +272,7 @@ namespace Neo.Emulation.API
         public static bool GetHeight(ExecutionEngine engine)
         {
             var blockchain = engine.GetBlockchain();
-            engine.EvaluationStack.Push(blockchain.currentHeight);
+            engine.EvaluationStack.Push(blockchain.currentHeight - 1);
 
             return true;
         }
