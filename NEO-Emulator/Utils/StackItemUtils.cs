@@ -53,7 +53,7 @@ namespace Neo.Emulation.Utils
                     builder.Append(StackItemAsString(key));
                     builder.Append(" : ");
                     builder.Append(StackItemAsString(mapItem[key]));
-                    builder.Append("\n");
+                    builder.Append(",\n");
                 }
                 builder.Append("}");
 
