@@ -8,6 +8,7 @@ using NEO_Emulator.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 
 namespace Neo.Emulation.API
@@ -392,9 +393,10 @@ namespace Neo.Emulation.API
 
         public void AddMockBlocks(int countMockBlocks)
         {
-            var now = DateTime.Now;
             for (int i = 0; i < countMockBlocks; i++)
             {
+                var now = Blocks.LastOrDefault()?.timestamp ?? DateTime.UtcNow.ToTimestamp();
+
                 var keypair = KeyPair.FromWIF(InitialPrivateWIF);
 
                 int amount = 0;
@@ -403,7 +405,7 @@ namespace Neo.Emulation.API
                 balances["NEO"] = amount;
                 balances["GAS"] = amount;
 
-                var block = GenerateBlock(now.AddDays(i));
+                var block = GenerateBlock(now.ToDateTime().AddMinutes(1));
 
                 var hash = new UInt160(CryptoUtils.AddressToScriptHash(keypair.address));
 
