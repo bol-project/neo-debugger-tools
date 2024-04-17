@@ -19,9 +19,9 @@ namespace Neo.Emulation.API
         public IEnumerable<Account> Accounts { get { return _accounts; } }
         public int AddressCount { get { return _accounts.Count; } }
 
-        public IEnumerable<Block> Blocks { get { return _blocks.Values; } }
+        public IEnumerable<Block> Blocks { get { return _blocks; } }
 
-        private Dictionary<uint, Block> _blocks = new Dictionary<uint, Block>();
+        private List<Block> _blocks = new List<Block>();
         private List<Account> _accounts = new List<Account>();
 
         public string fileName { get; set; }
@@ -34,11 +34,13 @@ namespace Neo.Emulation.API
                 {
                     return null;
                 }
-                return _blocks[currentHeight - 1];
+                return _blocks[Convert.ToInt32(currentHeight) - 1];
             }
         }
 
         public static readonly string InitialPrivateWIF = "KxDgvEKzgSBPPfuVfw67oPQBSjidEiqTHURKSDL1R7yGaGYAeYnr";
+        public static readonly KeyPair InitialPrivateKeyPair = KeyPair.FromWIF(InitialPrivateWIF);
+        public static readonly UInt160 InitialScriptHash = new UInt160(CryptoUtils.AddressToScriptHash(InitialPrivateKeyPair.address));
 
         public Blockchain()
         {
@@ -48,7 +50,7 @@ namespace Neo.Emulation.API
 
         public void Reset()
         {
-            var keypair = KeyPair.FromWIF(InitialPrivateWIF);
+            var keypair = InitialPrivateKeyPair;
 
             int amount = 10000;
 
@@ -62,7 +64,7 @@ namespace Neo.Emulation.API
             _blocks.Clear();
             var block = GenerateBlock();
 
-            var hash = new UInt160(CryptoUtils.AddressToScriptHash(keypair.address));
+            var hash = InitialScriptHash;
 
             var tx = new Transaction(block);
 
@@ -111,7 +113,7 @@ namespace Neo.Emulation.API
                 }
             }
 
-            _blocks[block.height] = block;
+            _blocks.Add(block);
             return true;
         }
 
@@ -145,9 +147,9 @@ namespace Neo.Emulation.API
 
         public Block GetBlockByHeight(uint height)
         {
-            if (_blocks.ContainsKey(height))
+            if (_blocks.Count > height)
             {
-                return _blocks[height];
+                return _blocks[Convert.ToInt32(height)];
             }
 
             return null;
@@ -178,7 +180,7 @@ namespace Neo.Emulation.API
                     var block = new Block(index, 0, RandomUtils.RandomUInt(), RandomUtils.RandomHash());
                     if (block.Load(child))
                     {
-                        _blocks[index] = block;
+                        _blocks[Convert.ToInt32(index)] = block;
                     }
                 }
                 if (child.Name.Equals("address"))
@@ -223,7 +225,7 @@ namespace Neo.Emulation.API
             var result = DataNode.CreateObject("blockchain");
             for (uint i = 1; i <= _blocks.Count; i++)
             {
-                var block = _blocks[i];
+                var block = _blocks[Convert.ToInt32(i)];
                 result.AddNode(block.Save());
             }
 
@@ -300,16 +302,16 @@ namespace Neo.Emulation.API
 
                 var height = (uint)temp;
 
-                if (blockchain._blocks.ContainsKey(height))
+                if (blockchain._blocks.Count > height)
                 {
-                    block = blockchain._blocks[height];
+                    block = blockchain._blocks[Convert.ToInt32(height)];
                 }
                 else
                 if (height <= blockchain.currentHeight)
                 {
                     uint index = height + 1;
                     block = new Block(index, 1506787300, RandomUtils.RandomUInt(), RandomUtils.RandomHash());
-                    blockchain._blocks[index] = block;
+                    blockchain._blocks[Convert.ToInt32(index)] = block;
                 }
             }
 
@@ -347,7 +349,7 @@ namespace Neo.Emulation.API
             var obj = engine.EvaluationStack.Pop();
             var temp = obj.GetBigInteger();
             var height = (uint)temp;
-            block = blockchain._blocks[height];
+            block = blockchain._blocks[Convert.ToInt32(height)];
             engine.EvaluationStack.Push(new VM.Types.InteropInterface(block));
             return true;
         }
@@ -397,17 +399,15 @@ namespace Neo.Emulation.API
             {
                 var now = Blocks.LastOrDefault()?.timestamp ?? DateTime.UtcNow.ToTimestamp();
 
-                var keypair = KeyPair.FromWIF(InitialPrivateWIF);
-
                 int amount = 0;
 
                 var balances = new Dictionary<string, decimal>();
                 balances["NEO"] = amount;
                 balances["GAS"] = amount;
 
-                var block = GenerateBlock(now.ToDateTime().AddMinutes(1));
+                var block = GenerateBlock(now.ToDateTime().AddSeconds(15));
 
-                var hash = new UInt160(CryptoUtils.AddressToScriptHash(keypair.address));
+                var hash = InitialScriptHash;
 
                 var tx = new Transaction(block);
 
