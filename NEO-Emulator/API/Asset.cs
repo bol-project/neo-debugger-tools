@@ -7,6 +7,7 @@ namespace Neo.Emulation.API
 {
     public static class Asset
     {
+        private static object s_lock = new object();
         public const uint Decimals = 100000000;
 
         public struct Entry
@@ -28,16 +29,18 @@ namespace Neo.Emulation.API
         {
             get
             {
-                if (_entries == null)
+                lock (s_lock)
                 {
-                    _entries = new List<Entry>();
+                    if (_entries == null)
+                    {
+                        _entries = new List<Entry>();
 
-                    _entries.Add(new Entry("NEO", "c56f33fc6ecfcd0c225c4ab356fee59390af8560be0e930faebe74a6daff7c9b"));
-                    _entries.Add(new Entry("GAS", "602c79718b16e442de58778e148d0b1084e3b2dffd5de6b7b16cee7969282de7"));
-                    //id = new byte[] { 155, 124, 255, 218, 166, 116, 190, 174, 15, 147, 14, 190, 96, 133, 175, 144, 147, 229, 254, 86, 179, 74, 92, 34, 12, 205, 207, 110, 252, 51, 111, 197 }
+                        _entries.Add(new Entry("NEO", "c56f33fc6ecfcd0c225c4ab356fee59390af8560be0e930faebe74a6daff7c9b"));
+                        _entries.Add(new Entry("GAS", "602c79718b16e442de58778e148d0b1084e3b2dffd5de6b7b16cee7969282de7"));
+                    }
+
+                    return _entries;
                 }
-
-                return _entries;
             }
         }
 
